@@ -1,0 +1,35 @@
+import React, { useState, useEffect } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+
+const HealthTracker = () => {
+  const [heartRate, setHeartRate] = useState(null);
+  const [spo2, setSpo2] = useState(null);
+  const [temperature, setTemperature] = useState(null);
+
+  useEffect(() => {
+    fetch("http://localhost:5000/health-data")
+      .then((res) => res.json())
+      .then((data) => {
+        setHeartRate(data.heartRate);
+        setSpo2(data.spo2);
+        setTemperature(data.temperature);
+      });
+  }, []);
+
+  return (
+    <div className="p-6">
+      <h1 className="text-xl font-bold mb-4">Infrared Health Tracker</h1>
+      <Card>
+        <CardContent className="p-4">
+          <p><strong>Heart Rate:</strong> {heartRate ? `${heartRate} BPM` : "Loading..."}</p>
+          <p><strong>SpO2:</strong> {spo2 ? `${spo2}%` : "Loading..."}</p>
+          <p><strong>Body Temperature:</strong> {temperature ? `${temperature}°C` : "Loading..."}</p>
+        </CardContent>
+      </Card>
+      <Button className="mt-4" onClick={() => window.location.reload()}>Refresh Data</Button>
+    </div>
+  );
+};
+
+export default HealthTracker;
