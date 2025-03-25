@@ -1,0 +1,35 @@
+const express = require("express");
+const cors = require("cors");
+const mongoose = require("mongoose");
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+mongoose.connect("mongodb://localhost:27017/healthTracker", {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
+const HealthDataSchema = new mongoose.Schema({
+  heartRate: Number,
+  spo2: Number,
+  temperature: Number,
+});
+
+const HealthData = mongoose.model("HealthData", HealthDataSchema);
+
+app.get("/health-data", async (req, res) => {
+  const data = await HealthData.findOne().sort({ _id: -1 });
+  res.json(data);
+});
+
+app.post("/health-data", async (req, res) => {
+  const newData = new HealthData(req.body);
+  await newData.save();
+  res.json({ message: "Data saved successfully!" });
+});
+
+app.listen(5000, () => {
+  console.log("Server running on port 5000");
+});
