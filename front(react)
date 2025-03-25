@@ -1,35 +1,26 @@
 import React, { useState, useEffect } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import axios from "axios";
 
 const HealthTracker = () => {
-  const [heartRate, setHeartRate] = useState(null);
-  const [spo2, setSpo2] = useState(null);
-  const [temperature, setTemperature] = useState(null);
+  const [data, setData] = useState({ heartRate: null, spo2: null, temperature: null });
 
   useEffect(() => {
-    fetch("http://localhost:5000/health-data")
-      .then((res) => res.json())
-      .then((data) => {
-        setHeartRate(data.heartRate);
-        setSpo2(data.spo2);
-        setTemperature(data.temperature);
-      });
+    axios.get("http://localhost:5000/health-data")
+      .then(response => setData(response.data))
+      .catch(error => console.error("Error fetching data:", error));
   }, []);
 
   return (
-    <div className="p-6">
-      <h1 className="text-xl font-bold mb-4">Infrared Health Tracker</h1>
-      <Card>
-        <CardContent className="p-4">
-          <p><strong>Heart Rate:</strong> {heartRate ? `${heartRate} BPM` : "Loading..."}</p>
-          <p><strong>SpO2:</strong> {spo2 ? `${spo2}%` : "Loading..."}</p>
-          <p><strong>Body Temperature:</strong> {temperature ? `${temperature}°C` : "Loading..."}</p>
-        </CardContent>
-      </Card>
-      <Button className="mt-4" onClick={() => window.location.reload()}>Refresh Data</Button>
+    <div className="container mx-auto p-6">
+      <h1 className="text-2xl font-bold text-center mb-4">Infrared Health Tracker</h1>
+      <div className="bg-white p-6 rounded-lg shadow-md max-w-md mx-auto">
+        <p className="text-lg"><strong>Heart Rate:</strong> {data.heartRate ? `${data.heartRate} BPM` : "Loading..."}</p>
+        <p className="text-lg"><strong>SpO2:</strong> {data.spo2 ? `${data.spo2}%` : "Loading..."}</p>
+        <p className="text-lg"><strong>Body Temperature:</strong> {data.temperature ? `${data.temperature}°C` : "Loading..."}</p>
+      </div>
     </div>
   );
 };
 
 export default HealthTracker;
+
